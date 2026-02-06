@@ -17,6 +17,8 @@ services:
   influxdb:
     image: influxdb:2.8.0
     container_name: influxdb
+    ports:
+      - 8086:8086
     user: "1000:1000"
     environment:
       DOCKER_INFLUXDB_INIT_MODE:

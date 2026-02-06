@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	// .env 파일을 불러오세요
+	// Charge le .env
 	if err := godotenv.Load(); err != nil {
 		log.Fatalln("fichier .env non trouvé")
 	}
@@ -19,7 +19,7 @@ func main() {
 	InOrg := os.Getenv("INFLUXDB_ORG")
 	InBucket := os.Getenv("INFLUXDB_BUCKET")
 
-	// 서버 목록을 불러오세요
+	// Charge la liste des serveurs
 	cfg, err := LoadConfig("servers.yaml")
 	if err != nil {
 		log.Fatalln("fichier servers.yaml non trouvé")
@@ -31,8 +31,10 @@ func main() {
 		go goroutines.GoLoad(srv, InUrl, InOrg, InBucket, InToken, 10)
 		go goroutines.GoProc(srv, InUrl, InOrg, InBucket, InToken, 10)
 		go goroutines.GoCPU(srv, InUrl, InOrg, InBucket, InToken, 10)
-		// 다른 고루틴
+		go goroutines.GoMem(srv, InUrl, InOrg, InBucket, InToken, 10)
+		go goroutines.GoDisk(srv, InUrl, InOrg, InBucket, InToken, 10)
+		go goroutines.GoNet(srv, InUrl, InOrg, InBucket, InToken, 10)
 	}
-	log.Println("listening on :80")
-	log.Fatal(http.ListenAndServe(":80", router()))
+	log.Println("listening on :8084")
+	log.Fatal(http.ListenAndServe(":8084", router()))
 }

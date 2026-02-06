@@ -4,7 +4,7 @@ DOCKER_DIR      ?= docker
 COMPOSE_FILE    ?= docker-compose.yml
 
 run:
-	@cd src ; go run main.go
+	@cd src ; go run *.go
 
 build:
 	@cd src ; go mod tidy ; go build -o ../bin/buildup *.go

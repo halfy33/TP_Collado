@@ -6,6 +6,7 @@ require (
 	github.com/influxdata/influxdb-client-go/v2 v2.14.0
 	github.com/joho/godotenv v1.5.1
 	github.com/shirou/gopsutil/v4 v4.26.1
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -22,5 +23,4 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
