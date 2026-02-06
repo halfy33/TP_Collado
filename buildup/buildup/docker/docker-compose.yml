@@ -1,6 +1,5 @@
-# Warning : 사이트 이름을 정하는 것을 잊지 마세요!
 services:
-  # 웹 프런트엔드
+  # Front-end Web
   traefik:
     image: traefik:v3.6
     container_name: front
@@ -14,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=true"
-  # InfluxDB 데이터베이스
+  # Base de données InfluxDB
   influxdb:
     image: influxdb:2.8.0
     container_name: influxdb
@@ -32,9 +31,9 @@ services:
       - ./influxdb2/config:/etc/influxdb2
     restart: unless-stopped
     labels:
-      - "traefik.http.routers.influxdb.rule=Host(`influx.test`)" # 사이트 이름
+      - "traefik.http.routers.influxdb.rule=Host(`influx.revelant`)" # Nom du influxDB
       - "traefik.http.services.influxdb.loadbalancer.server.port=8086"    
-  # 그래픽 렌더링 서비스
+  # Service de rendu graphique
   grafana:
     image: grafana/grafana:main
     container_name: grafana
@@ -50,5 +49,5 @@ services:
     volumes:
       - ./grafana/datas:/var/lib/grafana:rw
     labels:
-      - "traefik.http.routers.grafana.rule=Host(`grafana.test`)" # 사이트 이름
+      - "traefik.http.routers.grafana.rule=Host(`grafana.revelant`)" # Nom du grafana
       - "traefik.http.services.grafana.loadbalancer.server.port=3000"
