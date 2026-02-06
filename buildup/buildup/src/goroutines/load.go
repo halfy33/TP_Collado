@@ -24,7 +24,7 @@ func GoLoad(server, INFLUXDB_URL, INFLUXDB_ORG, INFLUXDB_BUCKET, INFLUXDB_TOKEN 
 
 	for range ticker.C {
 		// Récupération des valeurs
-		reqUrl := "http://" + server + "/load"
+		reqUrl := "http://" + server + "/avg"
 		resp, err := http.Get(reqUrl)
 		if err != nil {
 			log.Println("Erreur de communication : " + reqUrl)

@@ -8,7 +8,7 @@ func router() http.Handler {
 	mux := http.NewServeMux()
 	// health URL
 	mux.HandleFunc("GET /health", HealthHandle)
-	mux.HandleFunc("GET /load", ReadLoadHandler)
+	mux.HandleFunc("GET /avg", ReadLoadHandler)
 	mux.HandleFunc("GET /disk", ReadDiskhandler)
 	mux.HandleFunc("GET /cpu", ReadCpuHandler)
 	mux.HandleFunc("GET /mem", ReadMemoryHandler)
