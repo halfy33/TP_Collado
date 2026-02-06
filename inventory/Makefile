@@ -1,5 +1,5 @@
 run:
-	@cd src ; go run main.go
+	@cd src ; go run *.go
 
 build:
 	@cd src ; go mod tidy ; go build -o ../bin/inventory *.go
@@ -15,3 +15,9 @@ start:
 
 stop:
 	@docker rm -f inventory
+
+restart:
+	@make stop || true
+	@make build
+	@make image
+	@make start

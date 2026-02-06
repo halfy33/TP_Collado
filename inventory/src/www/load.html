@@ -39,7 +39,7 @@
   <!-- LOAD AVERAGE -->
   <section class="card">
     <h1>Charge système (load average)</h1>
-    <div class="muted">Source : <code>/load</code> — jauges 0 → 4.0</div>
+    <div class="muted">Source : <code>/avg</code> — jauges 0 → 4.0</div>
   </section>
 
   <section class="card" aria-live="polite">
@@ -92,15 +92,15 @@
     }
 
     // Bases / endpoints (avec fallback)
-    const LOAD_BASE = pickBase("{{.LoadServerURL}}", "http://linux:8888");
-    const CPU_BASE  = pickBase("{{.CpuServerURL}}",  "http://linux:8888");
+    const LOAD_BASE = pickBase("{{.LoadServerURL}}", "");
+    const CPU_BASE  = pickBase("{{.CpuServerURL}}",  "");
 
     // --- LOAD AVERAGE ---
     const LOAD_SCALE_MAX = 4.0;
 
     async function loadAvg() {
       try {
-        const res = await fetch(LOAD_BASE + "/load", { headers: { "Accept": "application/json" } });
+        const res = await fetch(LOAD_BASE + "/avg", { headers: { "Accept": "application/json" } });
         if (!res.ok) throw new Error("HTTP " + res.status);
         const d = await res.json(); // { avg: {load1,load5,load15}, misc: {...} }
 
