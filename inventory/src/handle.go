@@ -40,6 +40,23 @@ func PSUserHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(myProcs)
 }
 
+func KillHandler(w http.ResponseWriter, r *http.Request) {
+	pid := r.PathValue("pid")
+	if pid == "" {
+		http.Error(w, "PID manquant", http.StatusBadRequest)
+		return
+	}
+
+	err := proc.KillProc(pid)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprintf(w, `{"message": "Processus %s tué avec succès"}`, pid)
+}
+
 func NetHandler(w http.ResponseWriter, r *http.Request) {
 	out, err := netcard.ReadNetwork("")
 	if err != nil {

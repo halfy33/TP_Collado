@@ -22,6 +22,9 @@
     .pill { display:inline-block; padding:.1rem .45rem; border-radius:.75rem; border:1px solid color-mix(in oklab, canvastext 25%, transparent); font-size:.85rem; }
     .btn { padding:6px 10px; border-radius:10px; border:1px solid color-mix(in oklab, dodgerblue 40%, transparent); background: color-mix(in oklab, dodgerblue 35%, canvas); color:white; cursor:pointer; }
     .btn[disabled]{ opacity:.6; cursor:default; }
+    .btn-kill { padding:4px 8px; border-radius:8px; border:1px solid color-mix(in oklab, red 40%, transparent); background: color-mix(in oklab, red 25%, canvas); color:white; cursor:pointer; font-size:.85rem; }
+    .btn-kill:hover:not([disabled]) { background: color-mix(in oklab, red 35%, canvas); }
+    .btn-kill[disabled] { opacity:.5; cursor:not-allowed; }
     code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
     .hint { font-size:.85rem; opacity:.75; }
   </style>
@@ -70,10 +73,11 @@
           <th data-sort="status">Statut</th>
           <th data-sort="cpu" class="right">CPU %</th>
           <th data-sort="memory" class="right">Mémoire %</th>
+          <th class="noclick">Actions</th>
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="6" class="muted">Chargement…</td></tr>
+        <tr><td colspan="7" class="muted">Chargement…</td></tr>
       </tbody>
     </table>
   </section>
@@ -136,7 +140,7 @@
       const count = document.getElementById('count');
 
       if (!Array.isArray(items) || items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="muted">Aucune donnée</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="muted">Aucune donnée</td></tr>';
         count.textContent = '0 éléments';
         return;
       }
@@ -158,9 +162,13 @@
           + '<td><span class="pill">' + esc(status) + '</span></td>'
           + '<td class="right mono">' + cpu.toFixed(3) + '</td>'
           + '<td class="right mono">' + mem.toFixed(3) + '</td>'
+          + '<td><button class="btn-kill" data-pid="' + esc(pid) + '" data-name="' + esc(name) + '">🗑️ Kill</button></td>'
           + '</tr>'
         );
       }).join('');
+      
+      // Attacher les événements de kill
+      attachKillButtons();
     }
 
     let DATA = [];
@@ -182,7 +190,7 @@
         statusText.textContent = '✅ OK';
       } catch (e) {
         document.getElementById('tbody').innerHTML =
-          '<tr><td colspan="6" class="muted">Erreur: ' + esc(e.message) + '</td></tr>';
+          '<tr><td colspan="7" class="muted">Erreur: ' + esc(e.message) + '</td></tr>';
         document.getElementById('count').textContent = '0 éléments';
         statusText.textContent = '❌ ' + e.message;
       } finally {
@@ -194,6 +202,47 @@
       applySortSelection();
       const filtered = filterItems(DATA).slice().sort(comparator);
       render(filtered);
+    }
+
+    // Kill process function
+    async function killProcess(pid, name) {
+      const confirmed = confirm(`Êtes-vous sûr de vouloir tuer le processus ?\n\nPID: ${pid}\nNom: ${name}\n\n⚠️ Cette action est irréversible !`);
+      if (!confirmed) return;
+
+      const statusText = document.getElementById('statusText');
+      statusText.textContent = '⏳ Arrêt du processus ' + pid + '…';
+
+      try {
+        const res = await fetch('/ps/kill/' + pid, { 
+          method: 'POST',
+          headers: { 'Accept': 'application/json' }
+        });
+        
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(errText || 'HTTP ' + res.status);
+        }
+        
+        const result = await res.json();
+        statusText.textContent = '✅ ' + (result.message || 'Processus tué');
+        
+        // Rafraîchir la liste après 500ms
+        setTimeout(() => loadPs(), 500);
+      } catch (e) {
+        statusText.textContent = '❌ Erreur: ' + e.message;
+        alert('Impossible de tuer le processus ' + pid + ':\n' + e.message);
+      }
+    }
+
+    // Attach kill button events
+    function attachKillButtons() {
+      document.querySelectorAll('.btn-kill').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const pid = this.getAttribute('data-pid');
+          const name = this.getAttribute('data-name');
+          if (pid) killProcess(pid, name);
+        });
+      });
     }
 
     // UI events

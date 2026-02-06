@@ -13,6 +13,7 @@ func router() http.Handler {
 	mux.HandleFunc("GET /cpu", CPUHandler)
 	mux.HandleFunc("GET /ps", PSHandler)
 	mux.HandleFunc("GET /ps/{user}", PSUserHandler)
+	mux.HandleFunc("POST /ps/kill/{pid}", KillHandler)
 	mux.HandleFunc("GET /net", NetHandler)
 	mux.HandleFunc("GET /net/{card}", NetNameHandler)
 	mux.HandleFunc("GET /mem", MemHandler)
@@ -25,3 +26,4 @@ func router() http.Handler {
 
 	return mux
 }
+	
